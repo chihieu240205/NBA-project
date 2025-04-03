@@ -2,6 +2,8 @@ import pandas as pd
 from nba_api.stats.endpoints import leaguegamefinder
 import time
 from nba_api.stats.endpoints import leaguedashplayerstats
+import warnings
+warnings.filterwarnings('ignore')
 
 def fetch_regular_season_schedule(season):
     """
