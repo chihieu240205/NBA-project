@@ -74,38 +74,53 @@ def fetch_player_per_game_stats(season, season_type):
         print(f"Error retrieving {season_type} stats for {season}: {e}")
         return pd.DataFrame()
     
-def wrangle_player_stats(df):
+def wrangle_player_performance(df):
     """
-    Cleans and wrangles the NBA player per game stats data.
+    Cleans and wrangles the player per game stats data for reviewing individual performance.
     
-    Steps performed:
-      - Remove duplicate rows.
-      - Drop ranking columns (any column that includes '_RANK').
-      - Optionally drop extra identifier columns (e.g., 'NICKNAME').
-      - Standardize column names by converting them to lowercase.
-    
-    Args:
-        df (pd.DataFrame): DataFrame containing player per game stats.
-        
-    Returns:
-        pd.DataFrame: The cleaned and wrangled DataFrame.
+    Cleaning steps performed:
+      1. Convert all column names to uppercase.
+      2. Remove duplicate rows.
+      3. Drop irrelevant columns: ranking columns (columns containing 'RANK') and extra identifiers (e.g., 'NICKNAME', 'W', 'L', 'W_PCT').
+      4. Handle missing values by dropping rows with missing data.
+      5. Convert applicable columns to numeric types.
+      6. Standardize column names (ensuring they remain uppercase and stripped).
+      7. Retain only needed attributes.
     """
-    # Create a copy of the DataFrame to avoid modifying the original data
+    # 1. Convert all column names to uppercase and strip whitespace
+    df.columns = [col.strip().upper() for col in df.columns]
+
+    # Create a copy to avoid modifying the original DataFrame
     df_clean = df.copy()
-    
-    # Remove duplicate rows
-    df_clean = df_clean.drop_duplicates()
-    
-    # Drop ranking columns (any column that contains 'RANK')
-    rank_columns = [col for col in df_clean.columns if 'RANK' in col]
-    df_clean.drop(columns=rank_columns, inplace=True)
-    
-    # Optionally drop extra identifier columns that might not be useful for modeling
-    # For example, you may decide to drop 'NICKNAME'
-    if 'NICKNAME' in df_clean.columns:
-        df_clean.drop(columns=['NICKNAME'], inplace=True)
-    
-    # Standardize column names to lowercase for consistency
-    df_clean.columns = [col.lower() for col in df_clean.columns]
-    
+
+    # 2. Remove duplicate rows
+    df_clean.drop_duplicates(inplace=True)
+
+    # 3. Drop irrelevant columns
+    rank_cols = [col for col in df_clean.columns if 'RANK' in col]
+    extra_irrelevant_cols = ['NICKNAME', 'W', 'L', 'W_PCT']
+    cols_to_drop = rank_cols + [col for col in extra_irrelevant_cols if col in df_clean.columns]
+    df_clean.drop(columns=cols_to_drop, inplace=True)
+
+    # 4. Handle missing values
+    df_clean.dropna(inplace=True)
+
+    # 5. Convert to numeric where applicable
+    non_numeric_cols = ['PLAYER_NAME', 'TEAM_ABBREVIATION', 'SEASON']
+    for col in df_clean.columns:
+        if col not in non_numeric_cols:
+            df_clean[col] = pd.to_numeric(df_clean[col], errors='ignore')
+
+    # 6. Ensure column names are standardized
+    df_clean.columns = [col.strip().upper() for col in df_clean.columns]
+
+    # 7. Keep only needed attributes
+    needed_cols = [
+        'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'AGE', 'GP', 'MIN',
+        'FGM', 'FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',
+        'OREB', 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'PF', 'PTS', 'PLUS_MINUS',
+        'NBA_FANTASY_PTS', 'DD2', 'TD3', 'SEASON'
+    ]
+    df_clean = df_clean[[col for col in needed_cols if col in df_clean.columns]]
+
     return df_clean
