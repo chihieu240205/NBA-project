@@ -69,7 +69,7 @@ def run_linear_regression(threshold=2.0):
     print(f"Linear Regression RMSE: {lr_rmse:.2f}, R²: {lr_r2:.2f}")
 
     # Print top 10 accurate predictions
-    print("\nAccurate Predictions (within ±2 points):")
-    print(test_df[test_df["accurate"]][[
-        "player", "pts_regular", "pts_playoff", "point_change", "predicted_change", "error"
-    ]].head(10).round(2))
+    # print("\nAccurate Predictions (within ±2 points):")
+    # print(test_df[test_df["accurate"]][[
+    #     "player", "pts_regular", "pts_playoff", "point_change", "predicted_change", "error"
+    # ]].head(10).round(2))

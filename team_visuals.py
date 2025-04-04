@@ -81,20 +81,31 @@ def analyze_win_percentages(df_schedule, team_abbreviation_map, playoff_teams, c
     comparison_df = pd.merge(playoff_win_df, overall_win_df, on='TEAM_NAME')
     comparison_df = comparison_df.sort_values(by='Overall Win%', ascending=False)
 
-    plt.figure(figsize=(12, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(18, 6), sharey=True)
     bar_width = 0.4
-    indices = range(len(comparison_df))
-    plt.bar(indices, comparison_df['Overall Win%'], width=bar_width, label='Overall Win%', color='blue')
-    plt.bar([i + bar_width for i in indices], comparison_df['Win% Against Playoff Teams'], width=bar_width, label='Win% Against Playoff Teams', color='orange')
 
-    plt.title(f'Comparison: Overall Win% vs. Win% Against Playoff Teams ({conference_name} Conference)', fontsize=18)
-    plt.xlabel('Team Name', fontsize=14)
-    plt.ylabel('Win Percentage (%)', fontsize=14)
-    team_labels = [' '.join(name.split(' ')[:-1]) + '\n' + name.split(' ')[-1] for name in comparison_df['TEAM_NAME']]
-    plt.xticks([i + bar_width / 2 for i in indices], team_labels, rotation=0, fontsize=10)
-    #plt.xticks([i + bar_width / 2 for i in indices], comparison_df['TEAM_NAME'])
-    plt.legend()
+    # Western Conference
+    west_df = comparison_df[comparison_df['TEAM_NAME'].isin(western_teams)]
+    indices = range(len(west_df))
+    axes[0].bar(indices, west_df['Overall Win%'], width=bar_width, label='Overall Win%', color='blue')
+    axes[0].bar([i + bar_width for i in indices], west_df['Win% Against Playoff Teams'], width=bar_width, label='Win% vs Playoff Teams', color='orange')
+    axes[0].set_title('Western Conference')
+    axes[0].set_xticks([i + bar_width / 2 for i in indices])
+    axes[0].set_xticklabels(west_df['TEAM_NAME'], rotation=90, fontsize=8)
+
+    # Eastern Conference
+    east_df = comparison_df[comparison_df['TEAM_NAME'].isin(eastern_teams)]
+    indices = range(len(east_df))
+    axes[1].bar(indices, east_df['Overall Win%'], width=bar_width, label='Overall Win%', color='blue')
+    axes[1].bar([i + bar_width for i in indices], east_df['Win% Against Playoff Teams'], width=bar_width, label='Win% vs Playoff Teams', color='orange')
+    axes[1].set_title('Eastern Conference')
+    axes[1].set_xticks([i + bar_width / 2 for i in indices])
+    axes[1].set_xticklabels(east_df['TEAM_NAME'], rotation=90, fontsize=8)
+
+    for ax in axes:
+        ax.set_ylabel('Win Percentage (%)')
+        ax.legend()
+
+    plt.suptitle('Overall vs Playoff Win% by Conference', fontsize=16)
     plt.tight_layout()
     plt.show()
-
-    return comparison_df

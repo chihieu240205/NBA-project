@@ -2,6 +2,8 @@ import pandas as pd
 from nba_api.stats.endpoints import leaguegamefinder
 import time
 from nba_api.stats.endpoints import leaguedashplayerstats
+from nba_api.stats.endpoints import leaguegamefinder
+from nba_api.stats.endpoints import playergamelog
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -126,3 +128,102 @@ def wrangle_player_performance(df):
     df_clean = df_clean[[col for col in needed_cols if col in df_clean.columns]]
 
     return df_clean
+
+def filter_completed_matches(df):
+    """
+    Filters the given DataFrame to only include matches that have results (i.e., completed games).
+    
+    Parameters:
+        df (pd.DataFrame): DataFrame returned by the fetch_regular_season_schedule function.
+        
+    Returns:
+        pd.DataFrame: Filtered DataFrame containing only completed matches.
+    """
+    if df.empty:
+        print("The provided DataFrame is empty.")
+        return pd.DataFrame()
+    
+    if 'WL' not in df.columns:
+        print("The provided DataFrame does not have a 'WL' column.")
+        return pd.DataFrame()
+
+    # Filter the DataFrame to include only rows where the 'WL' column is not null or empty
+    completed_matches = df[df['WL'].notna() & (df['WL'] != '')]
+
+    return completed_matches
+
+def fetch_player_vs_team_stats(player_id, season, opponent_abbreviation):
+    """
+    Fetches a player's past performance against a specific team in both Regular Season and Playoffs.
+    
+    Parameters:
+        player_id (int): The unique ID of the player.
+        season (str): NBA season in 'YYYY-YY' format (e.g., '2023-24').
+        opponent_abbreviation (str): The abbreviation of the opponent team (e.g., 'DEN' for Denver Nuggets).
+        
+    Returns:
+        pd.DataFrame: A DataFrame containing the player's historical performance against the specific team.
+    """
+    try:
+        combined_df = pd.DataFrame()  # Initialize an empty DataFrame
+        
+        for season_type in ['Regular Season', 'Playoffs']:
+            time.sleep(1)  # Avoid rate-limiting
+            
+            # Fetch the game logs for the specific season type
+            logs = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type)
+            logs_df = logs.get_data_frames()[0]
+            
+            # Filter the DataFrame to only include games against the specified opponent
+            filtered_df = logs_df[logs_df['MATCHUP'].str.contains(opponent_abbreviation)]
+            
+            # Add columns to indicate the season and season type for clarity
+            filtered_df['SEASON'] = season
+            filtered_df['SEASON_TYPE'] = season_type
+            
+            # Concatenate the filtered data to the combined DataFrame
+            combined_df = pd.concat([combined_df, filtered_df], ignore_index=True)
+        
+        # Sort by game date
+        if not combined_df.empty and 'GAME_DATE' in combined_df.columns:
+            combined_df['GAME_DATE'] = pd.to_datetime(combined_df['GAME_DATE'])
+            combined_df = combined_df.sort_values(by='GAME_DATE', ascending=False)
+        
+        return combined_df
+    except Exception as e:
+        print(f"Error retrieving game logs for player {player_id} against {opponent_abbreviation}: {e}")
+        return pd.DataFrame()
+    
+def fetch_last_n_games(player_id, season, n, season_type):
+    """
+    Fetches the last N completed games of a player from NBA API for a given season.
+    
+    Parameters:
+        player_id (int): The unique ID of the player.
+        season (str): NBA season in 'YYYY-YY' format (e.g., '2024-25').
+        n (int): Number of last games to retrieve.
+        season_type (str): Type of season ('Regular Season' or 'Playoffs').
+        
+    Returns:
+        pd.DataFrame: A DataFrame containing the last N completed games.
+    """
+    try:
+        # Fetch the game logs
+        time.sleep(1)  # Prevent hitting the rate limit
+        logs = playergamelog.PlayerGameLog(player_id=player_id, season=season, season_type_all_star=season_type)
+        logs_df = logs.get_data_frames()[0]
+        
+        # Ensure GAME_DATE is a datetime object and sort by date
+        logs_df['GAME_DATE'] = pd.to_datetime(logs_df['GAME_DATE'])
+        logs_df = logs_df.sort_values(by='GAME_DATE', ascending=False)
+        
+        # Filter out games that have not been completed (those missing 'MIN')
+        completed_games = logs_df[logs_df['MIN'].notna()]
+        
+        # Return only the last n completed games
+        last_n_games = completed_games.head(n)
+        
+        return last_n_games
+    except Exception as e:
+        print(f"Error retrieving last {n} completed games for player {player_id}: {e}")
+        return pd.DataFrame()
