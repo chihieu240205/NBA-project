@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
 
-pio.renderers.default = 'notebook_connected' 
+pio.renderers.default = 'iframe' 
 from analyze_win_percentages import analyze_win_percentages
 import get_data
 from get_data import fetch_bbr_player_avg_stats, fetch_bbr_playoffs_stats
