@@ -395,4 +395,4 @@ df_probs['seed'] = df_probs['team_id'].map(seed_map)
 # The column 'champion (1)' holds the champion probability.
 df_probs['tier'] = df_probs.apply(lambda row: classify_team(row['seed'], row['champion (1)']), axis=1)
 
-print(df_probs[['team_name', 'seed', 'champion probability', 'tier']])
+print(df_probs[['team_name', 'seed', 'champion (1)', 'tier']])
