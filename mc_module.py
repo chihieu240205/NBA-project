@@ -1,8 +1,6 @@
-pip install numpy pandas scikit-learn xgboost lightgbm requests tqdm joblib
-
-pip install nba_api
-
-pip install nba_api pandas scikit-learn numpy
+# pip install numpy pandas scikit-learn xgboost lightgbm requests tqdm joblib
+# pip install nba_api
+# pip install nba_api pandas scikit-learn numpy
 
 
 from nba_api.stats.endpoints.leaguegamefinder import LeagueGameFinder
