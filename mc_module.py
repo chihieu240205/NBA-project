@@ -2,8 +2,7 @@
 # pip install nba_api
 # pip install nba_api pandas scikit-learn numpy
 import warnings
-warnings.filterwarnings("ignore")
-import warnings
+
 
 # ignore only the "X does not have valid feature names" message
 warnings.filterwarnings(
@@ -201,7 +200,7 @@ first_round = [
     (west[3], west[4]),  # 4 vs 5
 ]
 
-print("Playoffs:", playoff_teams)
+
 
 raw_games = leaguegamefinder.LeagueGameFinder(
     season_nullable="2024-25",
@@ -358,7 +357,7 @@ except NameError:
 df_probs['team_name'] = df_probs['team_id'].map(id_to_name)
 df_probs = df_probs[['team_name','team_id','make_R2 (8)','make_R3 (4)','make_Finals (2)','champion (1)']]
 
-print(df_probs.sort_values('champion (1)', ascending=False))
+
 
 # Explanation:
 # The simulation starts from the first round defined in cell 10, which consists of 8 matchups (16 teams).
@@ -396,4 +395,4 @@ df_probs['seed'] = df_probs['team_id'].map(seed_map)
 # The column 'champion (1)' holds the champion probability.
 df_probs['tier'] = df_probs.apply(lambda row: classify_team(row['seed'], row['champion (1)']), axis=1)
 
-print(df_probs[['team_name', 'seed', 'champion (1)', 'tier']])
+print(df_probs[['team_name', 'seed', 'champion probability', 'tier']])
