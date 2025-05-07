@@ -1,7 +1,16 @@
 # pip install numpy pandas scikit-learn xgboost lightgbm requests tqdm joblib
 # pip install nba_api
 # pip install nba_api pandas scikit-learn numpy
+import warnings
+warnings.filterwarnings("ignore")
+import warnings
 
+# ignore only the "X does not have valid feature names" message
+warnings.filterwarnings(
+    action='ignore',
+    message='X does not have valid feature names',
+    category=UserWarning
+)
 
 from nba_api.stats.endpoints.leaguegamefinder import LeagueGameFinder
 import pandas as pd
@@ -14,14 +23,9 @@ games = LeagueGameFinder(
 games['GAME_DATE'] = pd.to_datetime(games['GAME_DATE'])
 games = games[games['MIN'] > 0]
 games = games[~games['MATCHUP'].str.contains('All-Star', na=False)]
-games
 
 
-from nba_api.stats.static import teams
-from pprint import pprint
 
-all_teams = teams.get_teams()
-pprint(all_teams, width=200)
 
 games['GAME_DATE'] = pd.to_datetime(games['GAME_DATE'])
 games = games[games['MIN'] > 0]
@@ -175,7 +179,7 @@ def series_win_prob(p):
 x_feat = merged[feature_cols].iloc[-1].values
 p_game = model.predict_proba([x_feat])[0,1]   # or calib.predict_proba
 p_series = series_win_prob(p_game)
-print(f"P(game) = {p_game:.3f}, P(series) = {p_series:.3f}")
+#print(f"P(game) = {p_game:.3f}, P(series) = {p_series:.3f}")
 
 
 # Given playoff_teams = [West seeds 1–8, then East seeds 1–8]
@@ -247,14 +251,6 @@ for A, B in first_round:
     p_game = model.predict_proba([features])[0, 1]
     series_p[(A, B)] = series_win_prob(p_game)
 
-import warnings
-
-# ignore only the "X does not have valid feature names" message
-warnings.filterwarnings(
-    action='ignore',
-    message='X does not have valid feature names',
-    category=UserWarning
-)
 
 import random
 from collections import Counter
@@ -369,7 +365,6 @@ print(df_probs.sort_values('champion (1)', ascending=False))
 # Only one team per matchup advances, so only the 8 winners from round 1 (and any teams that advance further)
 # can become champions. That is why the final counters (champs) include only around 8 teams.
 
-df_probs
 
 def classify_team(seed, champ_prob):
     # Define tiers based on seed and champion probability.
