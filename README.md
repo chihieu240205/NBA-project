@@ -127,16 +127,14 @@ Add screenshots here from your notebook or report, for example:
 - team contender tier chart
 
 Example markdown:
-
 ```md
 ![FG Percentage Scatter](images/fg_scatter.png)
 ![Playoff Opponent Win Percentage](images/team_win_pct.png)
 ![Model Results](images/model_results.png)
-```text
+```
 
-## Repository Structure, Setup, and Notes
-Repository Structure
-
+## Repository Structure
+```md
 .
 ├── get_data.py
 ├── player_visuals.py
@@ -147,29 +145,29 @@ Repository Structure
 ├── mc_module.py
 ├── CS418Final_report.ipynb
 └── README.md
+```
 
-How to Run
-
-1. Clone the repository
-2. Install dependencies
-3. Run the data-fetching and analysis scripts or notebook
+## How to Run
+Clone the repository
+Install dependencies
+Run the data-fetching and analysis scripts or notebook
 
 Example:
+```md
 git clone https://github.com/chihieu240205/NBA-project.git
 cd NBA-project
 pip install -r requirements.txt
 jupyter notebook
+```
 
 Then open the main notebook and run the cells in order.
 
-Future Improvements
+## Future Improvements
+incorporate player-tracking and shot-quality data
+add injury and lineup context
+include defensive matchup features
+improve model calibration and feature engineering
+expand visualizations and interactive dashboards
 
-- incorporate player-tracking and shot-quality data
-- add injury and lineup context
-- include defensive matchup features
-- improve model calibration and feature engineering
-- expand visualizations and interactive dashboards
-
-Course Context
-
+## Course Context
 This project was developed as a team course project focused on applying data science and machine learning methods to real sports analytics questions.
