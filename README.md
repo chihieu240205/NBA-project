@@ -132,10 +132,9 @@ Example markdown:
 ![FG Percentage Scatter](images/fg_scatter.png)
 ![Playoff Opponent Win Percentage](images/team_win_pct.png)
 ![Model Results](images/model_results.png)
+```text
 
 ## Repository Structure, Setup, and Notes
-
-```text
 Repository Structure
 
 .
