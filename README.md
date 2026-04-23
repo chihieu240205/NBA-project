@@ -132,3 +132,45 @@ Example markdown:
 ![FG Percentage Scatter](images/fg_scatter.png)
 ![Playoff Opponent Win Percentage](images/team_win_pct.png)
 ![Model Results](images/model_results.png)
+
+## Repository Structure, Setup, and Notes
+
+```text
+Repository Structure
+
+.
+├── get_data.py
+├── player_visuals.py
+├── team_visuals.py
+├── randomforestreg.py
+├── randomforestclassifier.py
+├── xgboostmodel.py
+├── mc_module.py
+├── CS418Final_report.ipynb
+└── README.md
+
+How to Run
+
+1. Clone the repository
+2. Install dependencies
+3. Run the data-fetching and analysis scripts or notebook
+
+Example:
+git clone https://github.com/chihieu240205/NBA-project.git
+cd NBA-project
+pip install -r requirements.txt
+jupyter notebook
+
+Then open the main notebook and run the cells in order.
+
+Future Improvements
+
+- incorporate player-tracking and shot-quality data
+- add injury and lineup context
+- include defensive matchup features
+- improve model calibration and feature engineering
+- expand visualizations and interactive dashboards
+
+Course Context
+
+This project was developed as a team course project focused on applying data science and machine learning methods to real sports analytics questions.
